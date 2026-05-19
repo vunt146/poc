@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+
+  <bpmn:process id="lead-lifecycle" name="Lead Lifecycle Process" isExecutable="true">
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_LeadCreated" name="Lead Created">
+    </bpmn:startEvent>
+
+    <!-- User Task: Contact Customer -->
+    <bpmn:userTask id="Task_ContactCustomer" name="Liên hệ khách hàng">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="lead-contact-form" />
+        <zeebe:assignmentDefinition assignee="=ownerId" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+
+    <!-- Exclusive Gateway: Contact Result -->
+    <bpmn:exclusiveGateway id="Gateway_ContactResult" name="Kết quả liên hệ?">
+    </bpmn:exclusiveGateway>
+
+    <!-- User Task: Process Lead -->
+    <bpmn:userTask id="Task_ProcessLead" name="Xử lý cơ hội">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="lead-process-form" />
+        <zeebe:assignmentDefinition assignee="=ownerId" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+
+    <!-- Service Task: Update Status -->
+    <bpmn:serviceTask id="Task_UpdateStatus" name="Cập nhật trạng thái">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="lead-status-change" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <!-- User Task: Collect Documents -->
+    <bpmn:userTask id="Task_CollectDocuments" name="Thu thập hồ sơ">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="lead-document-form" />
+        <zeebe:assignmentDefinition assignee="=ownerId" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+
+    <!-- End Event: Completed -->
+    <bpmn:endEvent id="EndEvent_Completed" name="Hoàn thành">
+    </bpmn:endEvent>
+
+    <!-- End Event: Rejected -->
+    <bpmn:endEvent id="EndEvent_Rejected" name="KH từ chối">
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_Contact" sourceRef="StartEvent_LeadCreated" targetRef="Task_ContactCustomer" />
+    <bpmn:sequenceFlow id="Flow_Contact_Gateway" sourceRef="Task_ContactCustomer" targetRef="Gateway_ContactResult" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Process" sourceRef="Gateway_ContactResult" targetRef="Task_ProcessLead">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=contactResult = "INTERESTED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Gateway_Rejected" sourceRef="Gateway_ContactResult" targetRef="EndEvent_Rejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=contactResult = "REJECTED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Process_Documents" sourceRef="Task_ProcessLead" targetRef="Task_CollectDocuments" />
+    <bpmn:sequenceFlow id="Flow_Documents_Status" sourceRef="Task_CollectDocuments" targetRef="Task_UpdateStatus" />
+    <bpmn:sequenceFlow id="Flow_Status_End" sourceRef="Task_UpdateStatus" targetRef="EndEvent_Completed" />
+
+  </bpmn:process>
+</bpmn:definitions>

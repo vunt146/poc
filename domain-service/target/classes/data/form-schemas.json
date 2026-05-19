@@ -1,0 +1,164 @@
+[
+  {
+    "formId": "form-lead-contact",
+    "formKey": "lead-contact-form",
+    "taskType": "lead-contact",
+    "title": "Liên hệ khách hàng",
+    "description": "Form ghi nhận kết quả liên hệ khách hàng",
+    "fields": [
+      {
+        "id": "action",
+        "type": "DROPDOWN",
+        "label": "Hành động",
+        "required": true,
+        "options": [
+          {"value": "CALL", "label": "Gọi điện"},
+          {"value": "EMAIL", "label": "Gửi email"},
+          {"value": "VISIT", "label": "Gặp trực tiếp"}
+        ],
+        "visibilityCondition": null,
+        "validation": null
+      },
+      {
+        "id": "callResult",
+        "type": "DROPDOWN",
+        "label": "Kết quả cuộc gọi",
+        "required": true,
+        "options": [
+          {"value": "INTERESTED", "label": "KH quan tâm"},
+          {"value": "CALLBACK", "label": "Hẹn gọi lại"},
+          {"value": "NOT_INTERESTED", "label": "KH không quan tâm"},
+          {"value": "NO_ANSWER", "label": "Không nghe máy"}
+        ],
+        "visibilityCondition": {
+          "dependsOn": "action",
+          "operator": "equals",
+          "value": "CALL"
+        },
+        "validation": null
+      },
+      {
+        "id": "note",
+        "type": "TEXTAREA",
+        "label": "Ghi chú",
+        "required": true,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": {"minLength": 5, "maxLength": 500, "message": "Ghi chú từ 5-500 ký tự"}
+      }
+    ]
+  },
+  {
+    "formId": "form-lead-process",
+    "formKey": "lead-process-form",
+    "taskType": "lead-process",
+    "title": "Xử lý cơ hội",
+    "description": "Form cập nhật tiến trình xử lý Lead",
+    "fields": [
+      {
+        "id": "status",
+        "type": "DROPDOWN",
+        "label": "Trạng thái mới",
+        "required": true,
+        "options": [
+          {"value": "PROCESSING", "label": "Đang xử lý"},
+          {"value": "DOCUMENT_COLLECTED", "label": "Đã thu thập hồ sơ"},
+          {"value": "COMPLETED", "label": "Hoàn thành"},
+          {"value": "REJECTED", "label": "KH từ chối"}
+        ],
+        "visibilityCondition": null,
+        "validation": null
+      },
+      {
+        "id": "reason",
+        "type": "TEXT",
+        "label": "Lý do",
+        "required": false,
+        "options": null,
+        "visibilityCondition": {
+          "dependsOn": "status",
+          "operator": "equals",
+          "value": "REJECTED"
+        },
+        "validation": {"maxLength": 200, "message": "Lý do tối đa 200 ký tự"}
+      },
+      {
+        "id": "note",
+        "type": "TEXTAREA",
+        "label": "Ghi chú",
+        "required": false,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": {"maxLength": 500, "message": "Ghi chú tối đa 500 ký tự"}
+      }
+    ]
+  },
+  {
+    "formId": "form-lead-allocate",
+    "formKey": "lead-allocate-form",
+    "taskType": "lead-allocate",
+    "title": "Phân bổ cơ hội",
+    "description": "Form phân bổ Lead cho cán bộ",
+    "fields": [
+      {
+        "id": "leadIds",
+        "type": "TEXT",
+        "label": "Danh sách Lead IDs (comma-separated)",
+        "required": true,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": {"minLength": 1, "message": "Vui lòng chọn ít nhất 1 Lead"}
+      },
+      {
+        "id": "targetUserIds",
+        "type": "TEXT",
+        "label": "Danh sách cán bộ IDs (comma-separated)",
+        "required": true,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": {"minLength": 1, "message": "Vui lòng chọn ít nhất 1 cán bộ"}
+      }
+    ]
+  },
+  {
+    "formId": "form-lead-document",
+    "formKey": "lead-document-form",
+    "taskType": "lead-document",
+    "title": "Thu thập hồ sơ",
+    "description": "Form ghi nhận hồ sơ đã thu thập",
+    "fields": [
+      {
+        "id": "documentType",
+        "type": "DROPDOWN",
+        "label": "Loại hồ sơ",
+        "required": true,
+        "options": [
+          {"value": "CMND", "label": "CMND/CCCD"},
+          {"value": "PASSPORT", "label": "Hộ chiếu"},
+          {"value": "INCOME_PROOF", "label": "Chứng minh thu nhập"},
+          {"value": "OTHER", "label": "Khác"}
+        ],
+        "visibilityCondition": null,
+        "validation": null
+      },
+      {
+        "id": "documentNumber",
+        "type": "TEXT",
+        "label": "Số giấy tờ",
+        "required": true,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": {"minLength": 6, "maxLength": 20, "message": "Số giấy tờ từ 6-20 ký tự"}
+      },
+      {
+        "id": "note",
+        "type": "TEXTAREA",
+        "label": "Ghi chú",
+        "required": false,
+        "options": null,
+        "visibilityCondition": null,
+        "validation": null
+      }
+    ]
+  }
+]

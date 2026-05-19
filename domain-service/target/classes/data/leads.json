@@ -1,0 +1,88 @@
+[
+  {
+    "id": "LEAD-001",
+    "customerName": "Nguyễn Văn An",
+    "status": "NEW_LEAD",
+    "ownerId": "USR-MGR-01",
+    "productType": "PAYMENT_ACCOUNT",
+    "productDetails": {"bundledProduct": "Thẻ ghi nợ nội địa"},
+    "createdAt": "2026-05-10T09:00:00",
+    "updatedAt": "2026-05-10T09:00:00",
+    "history": []
+  },
+  {
+    "id": "LEAD-002",
+    "customerName": "Trần Thị Bình",
+    "status": "NEW_LEAD",
+    "ownerId": "USR-MGR-01",
+    "productType": "CREDIT_CARD",
+    "productDetails": {"creditLimit": "50000000"},
+    "createdAt": "2026-05-11T10:30:00",
+    "updatedAt": "2026-05-11T10:30:00",
+    "history": []
+  },
+  {
+    "id": "LEAD-003",
+    "customerName": "Lê Hoàng Cường",
+    "status": "CONTACTED",
+    "ownerId": "USR-STAFF-01",
+    "productType": "LOAN",
+    "productDetails": {"loanType": "Vay tiêu dùng", "amount": "200000000"},
+    "createdAt": "2026-05-08T14:00:00",
+    "updatedAt": "2026-05-12T08:00:00",
+    "history": [
+      {"id": "H-001", "leadId": "LEAD-003", "previousStatus": "NEW_LEAD", "newStatus": "CONTACTED", "changedBy": "USR-STAFF-01", "changedAt": "2026-05-12T08:00:00", "note": "Đã gọi điện, KH quan tâm", "reason": "Liên hệ lần đầu"}
+    ]
+  },
+  {
+    "id": "LEAD-004",
+    "customerName": "Phạm Minh Đức",
+    "status": "PROCESSING",
+    "ownerId": "USR-STAFF-02",
+    "productType": "PAYMENT_ACCOUNT",
+    "productDetails": {"bundledProduct": "Internet Banking"},
+    "createdAt": "2026-05-05T11:00:00",
+    "updatedAt": "2026-05-14T16:00:00",
+    "history": [
+      {"id": "H-002", "leadId": "LEAD-004", "previousStatus": "NEW_LEAD", "newStatus": "CONTACTED", "changedBy": "USR-STAFF-02", "changedAt": "2026-05-07T09:00:00", "note": "KH đồng ý mở TK", "reason": "Gọi điện"},
+      {"id": "H-003", "leadId": "LEAD-004", "previousStatus": "CONTACTED", "newStatus": "PROCESSING", "changedBy": "USR-STAFF-02", "changedAt": "2026-05-14T16:00:00", "note": "Đang xử lý hồ sơ", "reason": "Thu thập giấy tờ"}
+    ]
+  },
+  {
+    "id": "LEAD-005",
+    "customerName": "Hoàng Thị Em",
+    "status": "NEW_IMPORTED_LEAD",
+    "ownerId": "USR-MGR-01",
+    "productType": "CREDIT_CARD",
+    "productDetails": {"creditLimit": "100000000"},
+    "createdAt": "2026-05-15T08:00:00",
+    "updatedAt": "2026-05-15T08:00:00",
+    "history": []
+  },
+  {
+    "id": "LEAD-006",
+    "customerName": "Vũ Quang Phúc",
+    "status": "NEW_LEAD",
+    "ownerId": "USR-MGR-01",
+    "productType": "LOAN",
+    "productDetails": {"loanType": "Vay mua nhà", "amount": "1500000000"},
+    "createdAt": "2026-05-16T10:00:00",
+    "updatedAt": "2026-05-16T10:00:00",
+    "history": []
+  },
+  {
+    "id": "LEAD-007",
+    "customerName": "Đỗ Thanh Giang",
+    "status": "COMPLETED",
+    "ownerId": "USR-STAFF-03",
+    "productType": "PAYMENT_ACCOUNT",
+    "productDetails": {"bundledProduct": "Thẻ Visa Debit"},
+    "createdAt": "2026-04-20T09:00:00",
+    "updatedAt": "2026-05-10T15:00:00",
+    "history": [
+      {"id": "H-004", "leadId": "LEAD-007", "previousStatus": "NEW_LEAD", "newStatus": "CONTACTED", "changedBy": "USR-STAFF-03", "changedAt": "2026-04-22T10:00:00", "note": "KH rất hứng thú", "reason": "Gọi điện"},
+      {"id": "H-005", "leadId": "LEAD-007", "previousStatus": "CONTACTED", "newStatus": "PROCESSING", "changedBy": "USR-STAFF-03", "changedAt": "2026-04-28T14:00:00", "note": "Đang xử lý", "reason": ""},
+      {"id": "H-006", "leadId": "LEAD-007", "previousStatus": "PROCESSING", "newStatus": "COMPLETED", "changedBy": "USR-STAFF-03", "changedAt": "2026-05-10T15:00:00", "note": "Hoàn thành mở TK", "reason": "Thành công"}
+    ]
+  }
+]

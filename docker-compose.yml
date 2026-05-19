@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Elasticsearch - required by Operate and Tasklist
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: crm-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Camunda Zeebe - Workflow Engine
+  zeebe:
+    image: camunda/zeebe:8.5.0
+    container_name: crm-zeebe
+    environment:
+      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
+      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
+      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_BULK_SIZE=1
+    ports:
+      - "26500:26500"
+      - "8088:8080"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  # Camunda Operate - Process Monitoring
+  operate:
+    image: camunda/operate:8.5.0
+    container_name: crm-operate
+    environment:
+      - CAMUNDA_OPERATE_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_OPERATE_ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "8083:8080"
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+  # Camunda Tasklist - User Task Management
+  tasklist:
+    image: camunda/tasklist:8.5.0
+    container_name: crm-tasklist
+    environment:
+      - CAMUNDA_TASKLIST_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_TASKLIST_ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "8084:8080"
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+  # Domain Service - Spring Boot Backend
+  domain-service:
+    build:
+      context: ./domain-service
+      dockerfile: Dockerfile
+    container_name: crm-domain-service
+    environment:
+      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
+      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+    ports:
+      - "8090:8090"
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+volumes:
+  elasticsearch-data:

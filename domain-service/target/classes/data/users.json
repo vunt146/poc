@@ -1,0 +1,42 @@
+[
+  {
+    "id": "USR-MGR-01",
+    "name": "Nguyễn Quốc Hùng",
+    "username": "hungnq",
+    "miscode": "MC-001",
+    "role": "TEAM_LEAD",
+    "managerId": null
+  },
+  {
+    "id": "USR-STAFF-01",
+    "name": "Trần Anh Dũng",
+    "username": "dungta",
+    "miscode": "MC-002",
+    "role": "CBBH",
+    "managerId": "USR-MGR-01"
+  },
+  {
+    "id": "USR-STAFF-02",
+    "name": "Lê Thị Hương",
+    "username": "huonglt",
+    "miscode": "MC-003",
+    "role": "CBBH",
+    "managerId": "USR-MGR-01"
+  },
+  {
+    "id": "USR-STAFF-03",
+    "name": "Phạm Văn Khánh",
+    "username": "khanhpv",
+    "miscode": "MC-004",
+    "role": "CBBH",
+    "managerId": "USR-MGR-01"
+  },
+  {
+    "id": "USR-STAFF-04",
+    "name": "Hoàng Minh Long",
+    "username": "longhm",
+    "miscode": "MC-005",
+    "role": "CBBH",
+    "managerId": "USR-MGR-01"
+  }
+]
