@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-05-19T00:00:00Z
-- **Current Stage**: CONSTRUCTION - Build and Test (Pending Docker)
+- **Current Stage**: CONSTRUCTION - Build and Test (COMPLETED)
 
 ## Workspace State
 - **Existing Code**: Yes (generated)
@@ -33,30 +33,31 @@
 - [x] Functional Design (COMPLETED - Domain Service)
 - [x] NFR Requirements (COMPLETED - Domain Service)
 - [x] Code Generation (COMPLETED - All units)
-- [ ] Build and Test (IN PROGRESS - Pending Docker restart)
+- [x] Build and Test (COMPLETED - All services running on macOS)
 
 ### 🟡 OPERATIONS PHASE
 - [ ] Operations - PLACEHOLDER
 
 ## Current Status
-- **Build**: ✅ Maven compile SUCCESS (29 files)
+- **Build**: ✅ Maven compile + package SUCCESS (29 files)
 - **Tests**: ✅ 10/10 PBT tests PASS (jqwik)
-- **Docker**: ❌ Docker Desktop needs restart → user restarting machine
-- **Next Step**: After restart → `docker-compose up -d` → deploy BPMN → verify APIs
+- **Docker**: ✅ All 5 containers running (macOS)
+- **BPMN**: ✅ lead-lifecycle v2 deployed
+- **Process Instance**: ✅ 1 instance running (waiting at "Liên hệ khách hàng")
+- **Environment**: macOS (switched from Windows)
 
 ## Resume Instructions
-When user returns after restart:
-1. Verify Docker Desktop is running: `docker version`
-2. Build JAR: `mvn package -DskipTests` (in domain-service/)
-3. Start stack: `docker-compose up -d` (in workspace root)
-4. Wait for health checks (~60-90s)
-5. Deploy BPMN: `./deploy.sh localhost:26500` (in bpmn-processes/scripts/)
-6. Verify: `curl http://localhost:8090/api/leads`
+Stack is running on macOS. If containers stopped:
+1. `docker compose up -d` (in workspace root)
+2. Wait ~60s for Elasticsearch healthy
+3. `docker start crm-operate crm-tasklist crm-domain-service` (if not auto-started due to Zeebe health check)
+4. Verify: `curl http://localhost:8090/api/leads`
 
 ## Key Paths
-- **Maven**: `C:\Program Files\NetBeans-23\netbeans\java\maven\bin\mvn.cmd`
-- **Docker**: `C:\Program Files\Docker\Docker\resources\bin\docker.exe`
-- **Java**: Java 19 (compatible with Java 17 target)
+- **Maven**: `/Users/working/Setup/apache-maven-3.9.6/bin/mvn`
+- **Docker**: docker (native macOS)
+- **Java**: Java 23.0.1 (compatible with Java 17 target)
+- **zbctl**: installed via npm (global)
 
 ## Architecture Summary
 - **Domain Service**: Spring Boot 3.2.x, Java 17, Maven, port 8090

@@ -1,68 +1,94 @@
-# 🔄 CHECKPOINT - Hướng dẫn tiếp tục sau restart
+# 🔄 CHECKPOINT - Trạng thái hiện tại
 
-## Trạng thái hiện tại
+## Trạng thái
 - ✅ Code đã generate xong (35+ files)
-- ✅ Build thành công (Maven compile OK)
+- ✅ Build thành công (Maven compile + package OK)
 - ✅ PBT Tests PASS (10/10)
-- ❌ Docker stack chưa chạy (cần Docker Desktop)
+- ✅ Docker stack đang chạy (5 containers)
+- ✅ BPMN deployed (lead-lifecycle v2)
+- ✅ Process instance đã tạo (đang chờ ở task "Liên hệ khách hàng")
 
 ---
 
-## Sau khi restart máy, thực hiện theo thứ tự:
+## Môi trường hiện tại: macOS
+- **Maven**: `/Users/working/Setup/apache-maven-3.9.6/bin/mvn`
+- **Java**: 23.0.1 (target Java 17)
+- **Docker**: 27.4.0
+- **zbctl**: installed via npm (global)
 
-### Bước 1: Mở Docker Desktop
-- Mở Docker Desktop từ Start Menu
-- Chờ icon Docker ở system tray chuyển sang trạng thái "Running" (~30-60s)
+---
 
-### Bước 2: Verify Docker
-Mở PowerShell/CMD:
-```powershell
-& "C:\Program Files\Docker\Docker\resources\bin\docker.exe" version
+## Services đang chạy
+
+| Service | Container | Port | URL | Credentials |
+|---|---|---|---|---|
+| Elasticsearch | crm-elasticsearch | 9200 | http://localhost:9200 | - |
+| Zeebe | crm-zeebe | 26500, 8088 | gRPC: localhost:26500 | - |
+| Operate | crm-operate | 8083 | http://localhost:8083 | demo/demo |
+| Tasklist | crm-tasklist | 8084 | http://localhost:8084 | demo/demo |
+| Domain Service | crm-domain-service | 8090 | http://localhost:8090/api/leads | - |
+
+---
+
+## Lệnh thường dùng
+
+### Start/Stop stack
+```bash
+# Start
+docker compose up -d
+
+# Stop
+docker compose down
+
+# Xem logs
+docker compose logs -f domain-service
+docker compose logs -f zeebe
 ```
 
-### Bước 3: Build JAR
-```powershell
-& "C:\Program Files\NetBeans-23\netbeans\java\maven\bin\mvn.cmd" clean package -DskipTests
-```
-Chạy trong thư mục: `d:\PROJECT\POC\workspace\CRM\domain-service`
-
-### Bước 4: Start Docker Compose Stack
-```powershell
-& "C:\Program Files\Docker\Docker\resources\bin\docker.exe" compose up -d
-```
-Chạy trong thư mục: `d:\PROJECT\POC\workspace\CRM`
-
-### Bước 5: Chờ services healthy (~60-90s)
-```powershell
-& "C:\Program Files\Docker\Docker\resources\bin\docker.exe" compose ps
+### Build lại Domain Service
+```bash
+cd domain-service
+mvn clean package -DskipTests
+cd ..
+docker compose up -d --build domain-service
 ```
 
-### Bước 6: Verify APIs
-```powershell
+### Deploy BPMN
+```bash
+zbctl deploy resource bpmn-processes/processes/lead-lifecycle.bpmn --address localhost:26500 --insecure
+```
+
+### Tạo process instance
+```bash
+zbctl create instance lead-lifecycle --variables '{"leadId":"LEAD-001","ownerId":"USR-STAFF-01","contactResult":""}' --address localhost:26500 --insecure
+```
+
+### Test APIs
+```bash
 curl http://localhost:8090/api/leads
 curl http://localhost:8090/api/forms/lead-contact
-curl http://localhost:8090/actuator/health
+curl http://localhost:8090/api/users
 ```
 
-### Bước 7: Truy cập UIs
-| Service | URL | Mô tả |
-|---|---|---|
-| Domain Service | http://localhost:8090/api/leads | REST API |
-| Camunda Operate | http://localhost:8083 | Monitoring workflows |
-| Camunda Tasklist | http://localhost:8084 | User task management |
+### Chạy PBT tests
+```bash
+cd domain-service
+mvn test
+```
 
 ---
 
-## Nếu gặp lỗi
+## Lưu ý kỹ thuật
 
-| Lỗi | Giải pháp |
-|---|---|
-| "port already in use" | `docker compose down` rồi `docker compose up -d` lại |
-| Elasticsearch OOM | Tăng Docker Desktop memory (Settings → Resources → 4GB+) |
-| Zeebe connection refused | Chờ thêm 30s, Zeebe cần thời gian khởi động |
-| Domain Service fail | Check log: `docker compose logs domain-service` |
+- Zeebe health check hiển thị "unhealthy" do image không có `curl`, nhưng service hoạt động bình thường
+- Nếu Operate/Tasklist không start tự động, chạy: `docker start crm-operate crm-tasklist crm-domain-service`
+- Elasticsearch cần ~60s để healthy, Zeebe cần thêm ~60s sau đó
 
 ---
 
-## Tiếp tục với AI-DLC
-Khi quay lại Kiro, chỉ cần nói: "Tôi đã restart xong, Docker đã chạy, hãy giúp tôi start stack"
+## Tiếp theo có thể làm
+
+1. Cấu hình Appsmith/Budibase frontend (manual, theo README)
+2. Thêm thêm BPMN processes phức tạp hơn
+3. Tích hợp workflow với Domain Service API
+4. Demo end-to-end: tạo lead → start workflow → complete tasks → verify trạng thái
