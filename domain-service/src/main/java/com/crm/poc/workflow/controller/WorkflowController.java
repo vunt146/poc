@@ -1,9 +1,11 @@
 package com.crm.poc.workflow.controller;
 
 import com.crm.poc.workflow.service.WorkflowService;
+import com.crm.poc.workflow.service.TasklistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -12,9 +14,17 @@ import java.util.Map;
 public class WorkflowController {
 
     private final WorkflowService workflowService;
+    private final TasklistService tasklistService;
 
-    public WorkflowController(WorkflowService workflowService) {
+    public WorkflowController(WorkflowService workflowService, TasklistService tasklistService) {
         this.workflowService = workflowService;
+        this.tasklistService = tasklistService;
+    }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<List<Map<String, Object>>> getActiveTasks() {
+        List<Map<String, Object>> tasks = tasklistService.getActiveTasks();
+        return ResponseEntity.ok(tasks);
     }
 
     @PostMapping("/start")

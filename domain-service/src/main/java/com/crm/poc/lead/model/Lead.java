@@ -16,6 +16,7 @@ public class Lead {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<LeadHistoryEntry> history = new ArrayList<>();
+    private Long processInstanceKey;
 
     public Lead() {}
 
@@ -37,4 +38,6 @@ public class Lead {
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     public List<LeadHistoryEntry> getHistory() { return history; }
     public void setHistory(List<LeadHistoryEntry> history) { this.history = history; }
+    public Long getProcessInstanceKey() { return processInstanceKey; }
+    public void setProcessInstanceKey(Long processInstanceKey) { this.processInstanceKey = processInstanceKey; }
 }

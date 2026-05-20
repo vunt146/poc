@@ -265,3 +265,147 @@
 **Context**: Build and Test - Paused pending Docker Desktop restart
 
 ---
+
+---
+
+## Frontend Appsmith - New Unit Request
+**Timestamp**: 2026-05-20T10:00:00Z
+**User Input**: "Hãy sử dụng AI DLC để giúp tôi xây dựng frontedn appsmith, theo mục đích dự án. Lưu ý, máy tôi ko khoẻ nên ko dùng docker cài appsmith được, xem có phương án kết hợp frontend appsmith cloud được ko"
+**AI Response**: Detected existing project with completed Domain Service. Created clarification questions for Frontend Appsmith unit with Appsmith Cloud approach.
+**Context**: INCEPTION - Requirements Analysis (new unit: Frontend Appsmith)
+
+---
+
+## Frontend Appsmith - Workspace Detection
+**Timestamp**: 2026-05-20T10:00:01Z
+**AI Response**: Identified brownfield project. Domain Service running on localhost:8090. Key constraint: user's machine cannot run Docker for Appsmith → need Appsmith Cloud solution. Created frontend-appsmith-questions.md with 5 questions.
+**Context**: INCEPTION - Workspace Detection (resume existing project, new unit)
+
+---
+
+---
+
+## Frontend Appsmith - Questions Answered
+**Timestamp**: 2026-05-20T10:15:00Z
+**User Input**: "Tôi đã hoàn thành"
+**AI Response**: Reading answers from frontend-appsmith-questions.md
+**Context**: INCEPTION - Requirements Analysis (reading user answers)
+
+### Answers Summary:
+- Q1 (Expose Domain Service): A - ngrok
+- Q2 (Appsmith Cloud account): B - Đã có tài khoản nhưng chưa dùng
+- Q3 (Scope): A - Đầy đủ tất cả 4 pages
+- Q4 (Camunda integration): C (Other) - Tích hợp qua Domain Service API, mọi hành động gọi vào Camunda đều qua Domain Service, Frontend không tương tác trực tiếp
+- Q5 (Output format): C - Cả hai: JSON export + guide giải thích
+
+---
+
+---
+
+## Frontend Appsmith - Requirements Document Created
+**Timestamp**: 2026-05-20T10:20:00Z
+**AI Response**: Created frontend-appsmith-requirements.md with:
+- Updated architecture (Appsmith Cloud + ngrok tunnel)
+- 6 functional requirement groups (FA-01 to FA-06)
+- 3 non-functional requirement groups (NFA-01 to NFA-03)
+- API contract summary (9 endpoints)
+- Data model examples (Lead, FormSchema)
+- Constraints and assumptions
+**Context**: INCEPTION - Requirements Analysis (Frontend Appsmith unit)
+
+---
+
+---
+
+## Frontend Appsmith - Requirements Approved
+**Timestamp**: 2026-05-20T10:25:00Z
+**User Input**: "Approve và tiếp tục"
+**AI Response**: Requirements approved. Proceeding to Workflow Planning for Frontend Appsmith unit.
+**Context**: INCEPTION - Requirements Analysis → Workflow Planning transition
+
+---
+
+---
+
+## Frontend Appsmith - Workflow Planning Complete
+**Timestamp**: 2026-05-20T10:30:00Z
+**AI Response**: Created execution plan. Recommended: SKIP all conditional stages (User Stories, App Design, Units, Functional Design, NFR, Infrastructure). EXECUTE only Code Generation + Build and Test. Rationale: Appsmith is lowcode platform, no custom code architecture needed, all business logic in existing Domain Service.
+**Context**: INCEPTION - Workflow Planning (Frontend Appsmith unit)
+
+---
+
+---
+
+## Frontend Appsmith - Workflow Planning Approved
+**Timestamp**: 2026-05-20T10:35:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: Workflow plan approved. Proceeding to Code Generation stage.
+**Context**: INCEPTION → CONSTRUCTION transition (Code Generation)
+
+---
+
+---
+
+## Frontend Appsmith - Code Generation Plan Created
+**Timestamp**: 2026-05-20T10:36:00Z
+**AI Response**: Created code generation plan with 12 steps covering: ngrok setup, datasource config, 4 pages implementation, navigation, JSON export, build guide, evaluation template, README update, and summary documentation.
+**Context**: CONSTRUCTION - Code Generation Part 1 (Planning)
+
+---
+
+## Frontend Appsmith - Code Generation Plan Approval Prompt
+**Timestamp**: 2026-05-20T10:36:01Z
+**AI Prompt**: Presenting code generation plan summary to user for approval. Plan at: aidlc-docs/construction/plans/frontend-appsmith-code-generation-plan.md
+**Context**: CONSTRUCTION - Code Generation Part 1 (awaiting approval)
+
+---
+
+---
+
+## Frontend Appsmith - Code Generation Plan Approved
+**Timestamp**: 2026-05-20T10:40:00Z
+**User Input**: "Approve và tiếp tục"
+**AI Response**: Plan approved. Starting Code Generation Part 2 (Generation).
+**Context**: CONSTRUCTION - Code Generation Part 2 (starting execution)
+
+---
+
+---
+
+## Frontend Appsmith - Code Generation Part 2 Complete
+**Timestamp**: 2026-05-20T10:50:00Z
+**AI Response**: Completed all 12 steps of code generation plan. Generated:
+- frontend-appsmith/docs/ngrok-setup.md
+- frontend-appsmith/docs/datasource-setup.md
+- frontend-appsmith/appsmith-export.json (4 pages, all queries, JS objects)
+- frontend-appsmith/docs/appsmith-build-guide.md (comprehensive step-by-step)
+- frontend-appsmith/docs/evaluation-notes.md (platform comparison template)
+- frontend-appsmith/README.md (updated for Appsmith Cloud)
+- aidlc-docs/construction/frontend-appsmith/code/code-generation-summary.md
+**Context**: CONSTRUCTION - Code Generation Part 2 (Generation complete)
+
+---
+
+---
+
+## Frontend Appsmith - Code Generation Approved
+**Timestamp**: 2026-05-20T10:55:00Z
+**User Input**: "Continue to Next Stage - Approve tiếp tục"
+**AI Response**: Code generation approved. Proceeding to Build and Test stage.
+**Context**: CONSTRUCTION - Code Generation → Build and Test transition
+
+---
+
+---
+
+## Frontend Appsmith - Build and Test Stage Complete
+**Timestamp**: 2026-05-20T11:00:00Z
+**Build Status**: Ready for import (JSON export generated)
+**Test Status**: 47 manual test cases created (pending user execution)
+**Files Generated**:
+- aidlc-docs/construction/build-and-test/frontend-appsmith-build-instructions.md
+- aidlc-docs/construction/build-and-test/frontend-appsmith-test-instructions.md
+- aidlc-docs/construction/build-and-test/frontend-appsmith-build-and-test-summary.md
+**Context**: CONSTRUCTION - Build and Test (Frontend Appsmith unit complete)
+
+---

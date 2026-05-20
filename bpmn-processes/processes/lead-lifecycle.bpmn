@@ -22,7 +22,7 @@
       </bpmn:extensionElements>
     </bpmn:userTask>
 
-    <bpmn:exclusiveGateway id="Gateway_ContactResult" name="Kết quả liên hệ?">
+    <bpmn:exclusiveGateway id="Gateway_ContactResult" name="Kết quả liên hệ?" default="Flow_Gateway_Process">
     </bpmn:exclusiveGateway>
 
     <bpmn:userTask id="Task_ProcessLead" name="Xử lý cơ hội">
@@ -53,8 +53,7 @@
 
     <bpmn:sequenceFlow id="Flow_Start_Contact" sourceRef="StartEvent_LeadCreated" targetRef="Task_ContactCustomer" />
     <bpmn:sequenceFlow id="Flow_Contact_Gateway" sourceRef="Task_ContactCustomer" targetRef="Gateway_ContactResult" />
-    <bpmn:sequenceFlow id="Flow_Gateway_Process" name="Quan tâm" sourceRef="Gateway_ContactResult" targetRef="Task_ProcessLead">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=contactResult = "INTERESTED"</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="Flow_Gateway_Process" name="Tiếp tục" sourceRef="Gateway_ContactResult" targetRef="Task_ProcessLead">
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_Gateway_Rejected" name="Từ chối" sourceRef="Gateway_ContactResult" targetRef="EndEvent_Rejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=contactResult = "REJECTED"</bpmn:conditionExpression>

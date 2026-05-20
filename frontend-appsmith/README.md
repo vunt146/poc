@@ -2,66 +2,113 @@
 
 ## Tổng quan
 
-Appsmith app cho CRM Lead Management, kết nối với Domain Service REST API.
+Appsmith Cloud app cho CRM Lead Management, kết nối với Domain Service REST API qua ngrok tunnel.
 
-## Setup
+**Platform**: Appsmith Cloud (app.appsmith.com) - không cần Docker
 
-### 1. Khởi động Appsmith
-```bash
-# Appsmith đã có trong docker-compose.yml
-docker-compose up -d appsmith
+---
+
+## Architecture
+
 ```
-Truy cập: http://localhost:8080
+Appsmith Cloud (internet)
+        |
+        | HTTPS
+        v
+ngrok tunnel (public URL)
+        |
+        | localhost:8090
+        v
+Spring Boot Domain Service
+        |
+        | gRPC
+        v
+Camunda 8 Zeebe (Docker local)
+```
 
-### 2. Tạo Datasource
-- Vào Settings → Datasources → New Datasource → REST API
-- Name: `CRM Domain Service`
-- URL: `http://domain-service:8090` (trong Docker network)
-- Hoặc `http://localhost:8090` (nếu Appsmith chạy ngoài Docker)
+**Nguyên tắc**: Frontend chỉ giao tiếp qua Domain Service API. Không gọi trực tiếp Camunda.
 
-### 3. Tạo Pages
+---
 
-#### Page 1: Lead List
-- **Widget**: Table hoặc List
-- **Query**: GET /api/leads
-- **Columns**: Status, Lead ID, Customer Name, Product Type
-- **Actions**: Click row → navigate to Lead Detail
+## Quick Start
 
-#### Page 2: Lead Detail
-- **Query**: GET /api/leads/{{leadId}}
-- **Widgets**: 
-  - Text widgets cho thông tin KH
-  - Progress bar cho trạng thái
-  - Table cho history
-  - Dropdown + Button cho cập nhật trạng thái
+### 1. Start Domain Service + Camunda
+```bash
+# Từ workspace root
+docker compose up -d
+# Đợi ~60s cho Elasticsearch healthy
+# Verify:
+curl http://localhost:8090/api/leads
+```
 
-#### Page 3: Lead Allocation
-- **Query**: GET /api/leads/allocatable?ownerId=USR-MGR-01
-- **Widgets**:
-  - Checkbox List cho chọn Leads
-  - Button "Phân bổ" → mở Modal
-  - Modal: Checkbox list cán bộ (GET /api/users/subordinates)
-  - Button "Phân bổ cơ hội" → POST /api/leads/allocate
+### 2. Start ngrok tunnel
+```bash
+ngrok http 8090
+# Ghi lại URL: https://xxxx.ngrok-free.app
+```
 
-#### Page 4: Dynamic Form
-- **Query**: GET /api/forms/{{taskType}}
-- **Widget**: JSON Form hoặc custom form builder
-- **Logic**: Parse JSON schema → render fields dynamically
-- **Conditional**: Show/hide fields based on visibilityCondition
+### 3. Import Appsmith App
+1. Login https://app.appsmith.com
+2. **Import** → Upload `appsmith-export.json`
+3. Cập nhật Datasource URL = ngrok URL
+4. Test: mở Lead List page
 
-## Dynamic Form Rendering
+### Hoặc: Build từ đầu
+Xem `docs/appsmith-build-guide.md` cho hướng dẫn step-by-step.
 
-Appsmith hỗ trợ JSON Form widget:
-1. Gọi API lấy form schema
-2. Transform schema thành Appsmith JSON Form format
-3. Render form dynamically
-4. Submit form data → POST /api/workflow/tasks/{id}/complete
+---
 
-## So sánh Notes
+## Pages
 
-Ghi nhận các điểm sau khi build:
-- Thời gian setup datasource
-- Khả năng render dynamic form từ JSON
-- Ease of use cho conditional fields
-- Performance khi polling API
-- Export/Import app capability
+| # | Page | Chức năng | API chính |
+|---|---|---|---|
+| 1 | Lead List | Danh sách Lead, click xem chi tiết | GET /api/leads |
+| 2 | Lead Detail | Chi tiết + progress + cập nhật trạng thái | GET/PUT /api/leads/{id} |
+| 3 | Lead Allocation | Chọn leads + phân bổ cho cán bộ | POST /api/leads/allocate |
+| 4 | Workflow Tasks | Active tasks + dynamic form rendering | GET /api/workflow/tasks |
+
+---
+
+## Files
+
+```
+frontend-appsmith/
+├── README.md                          # File này
+├── appsmith-export.json               # JSON export (importable)
+└── docs/
+    ├── ngrok-setup.md                 # Hướng dẫn cài ngrok
+    ├── datasource-setup.md            # Cấu hình datasource
+    ├── appsmith-build-guide.md        # Build guide step-by-step
+    └── evaluation-notes.md            # Template đánh giá platform
+```
+
+---
+
+## API Endpoints (Domain Service)
+
+| Method | Endpoint | Mô tả |
+|---|---|---|
+| GET | /api/leads | Danh sách Lead |
+| GET | /api/leads/{id} | Chi tiết Lead |
+| PUT | /api/leads/{id}/status | Cập nhật trạng thái |
+| GET | /api/leads/allocatable?ownerId= | Leads có thể phân bổ |
+| POST | /api/leads/allocate | Phân bổ Lead |
+| GET | /api/users/subordinates | Danh sách cán bộ |
+| GET | /api/workflow/tasks | Active workflow tasks |
+| GET | /api/forms/{taskType} | Form schema cho task |
+| POST | /api/workflow/tasks/{jobKey}/complete | Complete task |
+
+---
+
+## Lưu ý
+
+- **ngrok URL thay đổi** mỗi lần restart → cập nhật Datasource trên Appsmith
+- **Domain Service phải đang chạy** khi sử dụng app
+- **Không cần authentication** (POC mode)
+- **CORS đã enable** trên Domain Service (`@CrossOrigin(origins = "*")`)
+
+---
+
+## Evaluation
+
+Sau khi build xong, điền đánh giá vào `docs/evaluation-notes.md` để so sánh với Budibase.

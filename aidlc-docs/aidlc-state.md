@@ -34,6 +34,8 @@
 - [x] NFR Requirements (COMPLETED - Domain Service)
 - [x] Code Generation (COMPLETED - All units)
 - [x] Build and Test (COMPLETED - All services running on macOS)
+- [x] Frontend Appsmith - Code Generation (COMPLETED)
+- [x] Frontend Appsmith - Build and Test (COMPLETED)
 
 ### 🟡 OPERATIONS PHASE
 - [ ] Operations - PLACEHOLDER
@@ -45,6 +47,7 @@
 - **BPMN**: ✅ lead-lifecycle v2 deployed
 - **Process Instance**: ✅ 1 instance running (waiting at "Liên hệ khách hàng")
 - **Environment**: macOS (switched from Windows)
+- **Frontend Appsmith**: ✅ Code Generation + Build & Test COMPLETED
 
 ## Resume Instructions
 Stack is running on macOS. If containers stopped:
