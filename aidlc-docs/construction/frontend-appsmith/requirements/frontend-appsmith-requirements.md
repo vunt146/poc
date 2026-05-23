@@ -66,48 +66,58 @@
 | ID | Requirement |
 |---|---|
 | FA-01.1 | Cài đặt ngrok và tạo tunnel tới localhost:8090 |
-| FA-01.2 | Tạo Datasource trên Appsmith Cloud với ngrok public URL |
+| FA-01.2 | Tạo Datasource "CRM_Domain_Service" trên Appsmith Cloud với ngrok public URL |
 | FA-01.3 | Datasource phải hỗ trợ tất cả HTTP methods (GET, POST, PUT) |
 | FA-01.4 | CORS đã được enable trên Domain Service (CrossOrigin origins = "*") |
+| FA-01.5 | Headers bắt buộc: `ngrok-skip-browser-warning: true`, `Content-Type: application/json` |
 
 ### FA-02: Page 1 - Lead List (Danh sách Lead)
 
 | ID | Requirement |
 |---|---|
 | FA-02.1 | Hiển thị danh sách Lead dạng Table widget |
-| FA-02.2 | Columns: Status (badge/tag), Lead ID, Customer Name, Product Type, Created At |
-| FA-02.3 | API: GET /api/leads (optional filter: ?ownerId=xxx) |
+| FA-02.2 | Columns hiển thị: Status (badge/tag), Lead ID, Customer Name, Product Type, Process Instance Key, Created At |
+| FA-02.3 | API: GET /api/leads |
 | FA-02.4 | Click row → navigate tới Lead Detail page với leadId parameter |
 | FA-02.5 | Sắp xếp theo createdAt (mới nhất trước) |
 | FA-02.6 | Hiển thị thông báo khi danh sách rỗng |
-| FA-02.7 | Status column hiển thị dạng color-coded badge (New=blue, Contacted=yellow, Processing=orange, Done=green, Rejected=red) |
+| FA-02.7 | Status column hiển thị dạng color-coded badge (NEW_LEAD=blue, CONTACTED=yellow, PROCESSING=orange, COMPLETED=green, REJECTED=red) |
+| FA-02.8 | Columns ẩn: ownerId, productDetails, updatedAt, history |
 
 ### FA-03: Page 2 - Lead Detail (Chi tiết Lead)
 
 | ID | Requirement |
 |---|---|
-| FA-03.1 | Nhận leadId từ URL parameter hoặc navigation |
-| FA-03.2 | API: GET /api/leads/{id} |
-| FA-03.3 | Hiển thị thông tin khách hàng: customerName, productType, productDetails |
+| FA-03.1 | Nhận leadId từ URL query parameter (`?leadId=xxx`) |
+| FA-03.2 | API: GET /api/leads/{id} (id lấy từ `appsmith.URL.queryParams.leadId`) |
+| FA-03.3 | Hiển thị thông tin khách hàng: customerName, productType, productDetails, ownerId |
 | FA-03.4 | Thanh tiến trình (Progress widget): New → Contacted → Processing → Document Collected → Completed |
 | FA-03.5 | Hiển thị lịch sử trạng thái (Table widget): timestamp, fromStatus, toStatus, changedBy, note |
 | FA-03.6 | Dropdown cập nhật trạng thái: chỉ hiển thị trạng thái hợp lệ tiếp theo (dựa trên state machine) |
-| FA-03.7 | Button "Cập nhật" → PUT /api/leads/{id}/status với body {newStatus, updatedBy, note, reason} |
+| FA-03.7 | Button "Cập nhật" → PUT /api/leads/{id}/status với body {newStatus, updatedBy, note, reason}. Validate: nếu status = CONTACTED thì bắt buộc nhập ghi chú |
 | FA-03.8 | Sau khi cập nhật thành công → refresh data |
-| FA-03.9 | Hiển thị productDetails dạng key-value (dynamic theo productType) |
+| FA-03.9 | Hiển thị productDetails (bundledProduct) dạng JSON stringify |
+| FA-03.10 | Button "← Quay lại" → navigate về Lead List |
+| FA-03.11 | Button "Hành động tiếp theo" - dynamic theo trạng thái hiện tại: NEW_LEAD/NEW_IMPORTED_LEAD → "📞 Liên hệ khách hàng", CONTACTED → "📋 Xử lý cơ hội", PROCESSING → "📄 Thu thập hồ sơ". Ẩn khi status = COMPLETED/REJECTED/DOCUMENT_COLLECTED |
+| FA-03.12 | Button "Từ chối" → mở ModalReject. Ẩn khi status = COMPLETED/REJECTED |
+| FA-03.13 | ModalContact: Liên hệ khách hàng - fields: action (select), contactResult (select), note (input). API: POST /api/workflow/lead/{leadId}/contact |
+| FA-03.14 | ModalProcess: Xử lý cơ hội - fields: note (input). API: POST /api/workflow/lead/{leadId}/process |
+| FA-03.15 | ModalDocument: Thu thập hồ sơ - fields: note (input). API: POST /api/workflow/lead/{leadId}/collect-documents |
+| FA-03.16 | ModalReject: Từ chối Lead - fields: reason/note (input). API: POST /api/workflow/lead/{leadId}/reject |
+| FA-03.17 | Hỗ trợ trạng thái `NEW_IMPORTED_LEAD` (lead được import từ hệ thống khác) - xử lý tương tự NEW_LEAD |
 
 ### FA-04: Page 3 - Lead Allocation (Phân bổ Lead)
 
 | ID | Requirement |
 |---|---|
-| FA-04.1 | API: GET /api/leads/allocatable?ownerId=USR-MGR-01 (lấy leads có thể phân bổ) |
+| FA-04.1 | API: GET /api/leads/allocatable (lấy leads có thể phân bổ) |
 | FA-04.2 | Table với checkbox cho phép chọn nhiều Lead |
-| FA-04.3 | Nút "Chọn tất cả" / "Bỏ chọn tất cả" |
+| FA-04.3 | Hiển thị số lead đã chọn: "Đã chọn: X lead(s)" |
 | FA-04.4 | Button "Phân bổ" → mở Modal |
-| FA-04.5 | Modal: API GET /api/users/subordinates → hiển thị danh sách cán bộ với checkbox |
-| FA-04.6 | Khi chọn >= 2 cán bộ → hiển thị cảnh báo "Cơ hội sẽ được chia đều" |
-| FA-04.7 | Button "Phân bổ cơ hội" → POST /api/leads/allocate với body {leadIds, targetUserIds, requestedBy} |
-| FA-04.8 | Hiển thị kết quả phân bổ (allocation result) sau khi thành công |
+| FA-04.5 | Modal: API GET /api/users/subordinates → hiển thị danh sách cán bộ dạng Table với checkbox |
+| FA-04.6 | Hiển thị cảnh báo "Cơ hội sẽ được chia đều cho các cán bộ được chọn" |
+| FA-04.7 | Hiển thị summary: "Phân bổ X lead cho Y cán bộ" |
+| FA-04.8 | Button "Confirm" → POST /api/leads/allocate với body {leadIds, targetUserIds, requestedBy: "USR-MGR-01"} |
 | FA-04.9 | Refresh danh sách sau khi phân bổ |
 
 ### FA-05: Page 4 - Dynamic Form (Workflow Task Form)
@@ -170,15 +180,19 @@
 
 | # | Method | Endpoint | Request Body | Response | Page |
 |---|---|---|---|---|---|
-| 1 | GET | /api/leads | - (query: ?ownerId) | List of Lead | Lead List |
+| 1 | GET | /api/leads | - | List of Lead | Lead List |
 | 2 | GET | /api/leads/{id} | - | Lead (full detail + history) | Lead Detail |
 | 3 | PUT | /api/leads/{id}/status | {newStatus, updatedBy, note, reason} | Updated Lead | Lead Detail |
-| 4 | GET | /api/leads/allocatable | query: ?ownerId | List of Lead (allocatable only) | Allocation |
-| 5 | POST | /api/leads/allocate | {leadIds, targetUserIds, requestedBy} | AllocationResult | Allocation |
-| 6 | GET | /api/users/subordinates | query: ?managerId | List of User | Allocation |
-| 7 | GET | /api/workflow/tasks | - | List of active tasks | Dynamic Form |
-| 8 | GET | /api/forms/{taskType} | - | FormSchema (JSON) | Dynamic Form |
-| 9 | POST | /api/workflow/tasks/{jobKey}/complete | {form variables} | Completion result | Dynamic Form |
+| 4 | POST | /api/workflow/lead/{leadId}/contact | {action, contactResult, note, performedBy} | Workflow result | Lead Detail |
+| 5 | POST | /api/workflow/lead/{leadId}/process | {note, performedBy} | Workflow result | Lead Detail |
+| 6 | POST | /api/workflow/lead/{leadId}/collect-documents | {note, performedBy} | Workflow result | Lead Detail |
+| 7 | POST | /api/workflow/lead/{leadId}/reject | {note, reason, performedBy} | Workflow result | Lead Detail |
+| 8 | GET | /api/leads/allocatable | - | List of Lead (allocatable only) | Allocation |
+| 9 | POST | /api/leads/allocate | {leadIds, targetUserIds, requestedBy} | AllocationResult | Allocation |
+| 10 | GET | /api/users/subordinates | - | List of User | Allocation |
+| 11 | GET | /api/workflow/tasks | - | List of active tasks | Workflow Tasks |
+| 12 | GET | /api/forms/{taskType} | - | FormSchema (JSON) | Workflow Tasks |
+| 13 | POST | /api/workflow/tasks/{jobKey}/complete | {form variables} | Completion result | Workflow Tasks |
 
 ---
 
@@ -192,7 +206,8 @@
   "status": "NEW_LEAD",
   "ownerId": "USR-MGR-01",
   "productType": "CREDIT_CARD",
-  "productDetails": { "cardType": "Visa Platinum", "limit": 50000000 },
+  "productDetails": { "cardType": "Visa Platinum", "limit": 50000000, "bundledProduct": {...} },
+  "processInstanceKey": 2251799813685260,
   "createdAt": "2026-05-15T10:00:00",
   "updatedAt": "2026-05-15T10:00:00",
   "history": [
@@ -200,6 +215,15 @@
   ]
 }
 ```
+
+### Lead Status Values
+- `NEW_LEAD` - Lead mới tạo
+- `NEW_IMPORTED_LEAD` - Lead được import từ hệ thống khác
+- `CONTACTED` - Đã liên hệ khách hàng
+- `PROCESSING` - Đang xử lý
+- `DOCUMENT_COLLECTED` - Đã thu thập hồ sơ
+- `COMPLETED` - Hoàn thành
+- `REJECTED` - Từ chối
 
 ### FormSchema Object
 ```json
@@ -248,10 +272,12 @@
 - Appsmith Cloud free tier (có giới hạn về số app/queries)
 - Ngrok free tier (session 2h, URL thay đổi mỗi lần restart)
 - Domain Service phải đang chạy trên localhost:8090 khi demo
-- Không có authentication (POC)
+- Không có authentication (POC) - hardcode `performedBy: "USR-STAFF-01"`, `requestedBy: "USR-MGR-01"`
+- Header `ngrok-skip-browser-warning` bắt buộc để bypass ngrok interstitial page
 
 ### Assumptions
-- Appsmith Cloud hỗ trợ JSON Form widget hoặc custom form rendering
+- Appsmith Cloud hỗ trợ JSON Form widget cho dynamic form rendering
 - Ngrok tunnel ổn định đủ cho demo
 - CORS đã được cấu hình đúng trên Domain Service
 - Appsmith Cloud cho phép export/import app dạng JSON
+- Domain Service đã implement đầy đủ workflow endpoints (`/contact`, `/process`, `/collect-documents`, `/reject`)

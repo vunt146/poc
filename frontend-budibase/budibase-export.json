@@ -1,0 +1,293 @@
+{
+  "_meta": {
+    "appName": "CRM Lead Management",
+    "platform": "budibase",
+    "version": "3.x",
+    "exportDate": "2026-05-20T14:20:00Z",
+    "note": "This is a reference structure. Actual Budibase export format may differ. Use budibase-build-guide.md to build from scratch, then export from Budibase UI."
+  },
+  "datasources": [
+    {
+      "name": "CRM Domain Service",
+      "type": "REST",
+      "config": {
+        "baseUrl": "https://<NGROK_URL>.ngrok-free.app",
+        "defaultHeaders": {
+          "ngrok-skip-browser-warning": "true",
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ],
+  "queries": [
+    {
+      "name": "getAllLeads",
+      "method": "GET",
+      "path": "/api/leads",
+      "bindings": [],
+      "transformer": "return data"
+    },
+    {
+      "name": "getLeadById",
+      "method": "GET",
+      "path": "/api/leads/{{ leadId }}",
+      "bindings": [
+        { "name": "leadId", "type": "text", "default": "LEAD-001" }
+      ],
+      "transformer": "return data"
+    },
+    {
+      "name": "updateLeadStatus",
+      "method": "PUT",
+      "path": "/api/leads/{{ leadId }}/status",
+      "bindings": [
+        { "name": "leadId", "type": "text" },
+        { "name": "newStatus", "type": "text" },
+        { "name": "updatedBy", "type": "text", "default": "USR-STAFF-01" },
+        { "name": "note", "type": "text", "default": "" },
+        { "name": "reason", "type": "text", "default": "" }
+      ],
+      "body": {
+        "newStatus": "{{ newStatus }}",
+        "updatedBy": "{{ updatedBy }}",
+        "note": "{{ note }}",
+        "reason": "{{ reason }}"
+      }
+    },
+    {
+      "name": "contactLead",
+      "method": "POST",
+      "path": "/api/workflow/lead/{{ leadId }}/contact",
+      "bindings": [
+        { "name": "leadId", "type": "text" },
+        { "name": "action", "type": "text" },
+        { "name": "contactResult", "type": "text" },
+        { "name": "note", "type": "text", "default": "" }
+      ],
+      "body": {
+        "action": "{{ action }}",
+        "contactResult": "{{ contactResult }}",
+        "note": "{{ note }}",
+        "performedBy": "USR-STAFF-01"
+      }
+    },
+    {
+      "name": "processLead",
+      "method": "POST",
+      "path": "/api/workflow/lead/{{ leadId }}/process",
+      "bindings": [
+        { "name": "leadId", "type": "text" },
+        { "name": "note", "type": "text", "default": "" }
+      ],
+      "body": {
+        "note": "{{ note }}",
+        "performedBy": "USR-STAFF-01"
+      }
+    },
+    {
+      "name": "collectDocuments",
+      "method": "POST",
+      "path": "/api/workflow/lead/{{ leadId }}/collect-documents",
+      "bindings": [
+        { "name": "leadId", "type": "text" },
+        { "name": "note", "type": "text", "default": "" }
+      ],
+      "body": {
+        "note": "{{ note }}",
+        "performedBy": "USR-STAFF-01"
+      }
+    },
+    {
+      "name": "rejectLead",
+      "method": "POST",
+      "path": "/api/workflow/lead/{{ leadId }}/reject",
+      "bindings": [
+        { "name": "leadId", "type": "text" },
+        { "name": "note", "type": "text", "default": "" },
+        { "name": "reason", "type": "text", "default": "" }
+      ],
+      "body": {
+        "note": "{{ note }}",
+        "reason": "{{ reason }}",
+        "performedBy": "USR-STAFF-01"
+      }
+    }
+  ],
+  "screens": [
+    {
+      "route": "/leads",
+      "name": "Lead List",
+      "isHomeScreen": true,
+      "components": [
+        {
+          "type": "headline",
+          "text": "Danh sách Lead",
+          "size": "H2"
+        },
+        {
+          "type": "dataprovider",
+          "datasource": "getAllLeads",
+          "sortColumn": "createdAt",
+          "sortOrder": "descending",
+          "children": [
+            {
+              "type": "table",
+              "columns": [
+                { "name": "status", "label": "Trạng thái", "visible": true },
+                { "name": "id", "label": "Lead ID", "visible": true },
+                { "name": "customerName", "label": "Khách hàng", "visible": true },
+                { "name": "productType", "label": "Sản phẩm", "visible": true },
+                { "name": "processInstanceKey", "label": "Process Key", "visible": true },
+                { "name": "createdAt", "label": "Ngày tạo", "visible": true },
+                { "name": "ownerId", "visible": false },
+                { "name": "productDetails", "visible": false },
+                { "name": "updatedAt", "visible": false },
+                { "name": "history", "visible": false }
+              ],
+              "onRowClick": {
+                "action": "navigateTo",
+                "destination": "/lead/{{ Row.id }}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "route": "/lead/:leadId",
+      "name": "Lead Detail",
+      "urlVariables": ["leadId"],
+      "components": [
+        {
+          "type": "button",
+          "text": "← Quay lại",
+          "variant": "secondary",
+          "onClick": { "action": "navigateTo", "destination": "/leads" }
+        },
+        {
+          "type": "dataprovider",
+          "datasource": "getLeadById",
+          "bindings": { "leadId": "{{ url.leadId }}" },
+          "children": [
+            {
+              "type": "headline",
+              "text": "{{ getLeadById.data.customerName }}"
+            },
+            {
+              "type": "container",
+              "direction": "row",
+              "children": [
+                { "type": "paragraph", "text": "Sản phẩm: {{ getLeadById.data.productType }}" },
+                { "type": "paragraph", "text": "Chủ sở hữu: {{ getLeadById.data.ownerId }}" },
+                { "type": "paragraph", "text": "Trạng thái: {{ getLeadById.data.status }}" }
+              ]
+            },
+            {
+              "type": "container",
+              "label": "Progress Steps",
+              "direction": "row",
+              "children": [
+                { "type": "tag", "text": "New", "conditionalColor": "status >= NEW_LEAD" },
+                { "type": "tag", "text": "Contacted", "conditionalColor": "status >= CONTACTED" },
+                { "type": "tag", "text": "Processing", "conditionalColor": "status >= PROCESSING" },
+                { "type": "tag", "text": "Doc Collected", "conditionalColor": "status >= DOCUMENT_COLLECTED" },
+                { "type": "tag", "text": "Completed", "conditionalColor": "status = COMPLETED" }
+              ]
+            },
+            {
+              "type": "headline",
+              "text": "Lịch sử trạng thái",
+              "size": "H4"
+            },
+            {
+              "type": "table",
+              "data": "{{ getLeadById.data.history }}",
+              "columns": [
+                { "name": "timestamp", "label": "Thời gian" },
+                { "name": "fromStatus", "label": "Từ" },
+                { "name": "toStatus", "label": "Đến" },
+                { "name": "changedBy", "label": "Người thay đổi" },
+                { "name": "note", "label": "Ghi chú" }
+              ]
+            },
+            {
+              "type": "container",
+              "label": "Action Buttons",
+              "children": [
+                {
+                  "type": "button",
+                  "text": "Dynamic - based on status",
+                  "variant": "primary",
+                  "conditions": "hide when COMPLETED/REJECTED/DOCUMENT_COLLECTED",
+                  "onClick": "open corresponding modal"
+                },
+                {
+                  "type": "button",
+                  "text": "❌ Từ chối",
+                  "variant": "destructive",
+                  "conditions": "hide when COMPLETED/REJECTED",
+                  "onClick": "open modal reject"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "modal",
+          "name": "ModalContact",
+          "title": "Liên hệ khách hàng",
+          "form": {
+            "fields": [
+              { "name": "action", "type": "select", "label": "Hành động", "options": ["CALL", "EMAIL", "VISIT"] },
+              { "name": "contactResult", "type": "select", "label": "Kết quả", "options": ["INTERESTED", "NOT_INTERESTED", "CALLBACK"] },
+              { "name": "note", "type": "textarea", "label": "Ghi chú" }
+            ],
+            "onSubmit": "execute contactLead → close → refresh → notify"
+          }
+        },
+        {
+          "type": "modal",
+          "name": "ModalProcess",
+          "title": "Xử lý cơ hội",
+          "form": {
+            "fields": [
+              { "name": "note", "type": "textarea", "label": "Ghi chú xử lý" }
+            ],
+            "onSubmit": "execute processLead → close → refresh → notify"
+          }
+        },
+        {
+          "type": "modal",
+          "name": "ModalDocument",
+          "title": "Thu thập hồ sơ",
+          "form": {
+            "fields": [
+              { "name": "note", "type": "textarea", "label": "Ghi chú hồ sơ" }
+            ],
+            "onSubmit": "execute collectDocuments → close → refresh → notify"
+          }
+        },
+        {
+          "type": "modal",
+          "name": "ModalReject",
+          "title": "Từ chối Lead",
+          "form": {
+            "fields": [
+              { "name": "reason", "type": "text", "label": "Lý do từ chối" },
+              { "name": "note", "type": "textarea", "label": "Ghi chú thêm" }
+            ],
+            "onSubmit": "execute rejectLead → close → refresh → notify"
+          }
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "type": "sidebar",
+    "title": "CRM Lead Management",
+    "links": [
+      { "label": "Danh sách Lead", "path": "/leads" },
+      { "label": "Chi tiết Lead", "path": "/lead/:leadId" }
+    ]
+  }
+}

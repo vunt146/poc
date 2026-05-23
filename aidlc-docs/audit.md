@@ -409,3 +409,151 @@
 **Context**: CONSTRUCTION - Build and Test (Frontend Appsmith unit complete)
 
 ---
+
+
+## Frontend Budibase - New Unit Request
+**Timestamp**: 2026-05-20T14:00:00Z
+**User Input**: "hãy dùng AI DLC để xây dựng tiếp frontend sử dụng opensource là budibase trên cloud. Cách triển khai cần giống hệt appsmith để so sánh 2 giải pháp"
+**AI Response**: Detected existing project with completed Appsmith frontend. Starting Frontend Budibase unit (Unit 4 from original plan). Approach: mirror Appsmith Cloud pattern using Budibase Cloud for fair comparison.
+**Context**: INCEPTION - Workspace Detection (resume existing project, new unit: Frontend Budibase)
+
+---
+
+
+## Frontend Budibase - Workspace Re-check
+**Timestamp**: 2026-05-20T14:05:00Z
+**User Input**: "hãy kiểm tra lại tổng thể project 1 lần nữa, tôi vừa có thay đổi"
+**AI Response**: Re-scanned workspace. Read user answers from frontend-budibase-questions.md. All 6 questions answered. No contradictions detected.
+**Context**: INCEPTION - Requirements Analysis (Frontend Budibase) - Reading answers
+
+### Answers Summary:
+- Q1 (Hosting): A - Budibase Cloud (budibase.app)
+- Q2 (Account): B - Đã có tài khoản nhưng chưa dùng
+- Q3 (Scope): C (Other) - Chỉ 2 pages: Lead List + Lead Detail
+- Q4 (ngrok): A - Dùng chung ngrok tunnel
+- Q5 (Output): C - Cả hai: JSON export + guide chi tiết
+- Q6 (Evaluation): A - Giữ nguyên tiêu chí như Appsmith
+
+---
+
+## Frontend Budibase - Requirements Document Created
+**Timestamp**: 2026-05-20T14:06:00Z
+**AI Response**: Created frontend-budibase-requirements.md with:
+- Updated architecture (Budibase Cloud + ngrok tunnel chung)
+- Scope: 2 screens (Lead List + Lead Detail) thay vì 4
+- 4 requirement groups (FB-01 to FB-04)
+- 3 non-functional requirement groups (NFB-01 to NFB-03)
+- API contract summary (7 endpoints)
+- Data models + State machine
+- Constraints and assumptions
+**Context**: INCEPTION - Requirements Analysis (Frontend Budibase unit)
+
+---
+
+
+## Frontend Budibase - Requirements Approved
+**Timestamp**: 2026-05-20T14:10:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: Requirements approved. Proceeding to Workflow Planning for Frontend Budibase unit.
+**Context**: INCEPTION - Requirements Analysis → Workflow Planning transition
+
+---
+
+
+## Frontend Budibase - Workflow Planning Complete
+**Timestamp**: 2026-05-20T14:12:00Z
+**AI Response**: Created execution plan for Frontend Budibase unit. Recommended: SKIP all conditional stages (User Stories, App Design, Units, Functional Design, NFR, Infrastructure). EXECUTE only Code Generation + Build and Test. Rationale: Budibase is lowcode platform, scope is 2 screens, all business logic in existing Domain Service, ngrok reused from Appsmith.
+**Context**: INCEPTION - Workflow Planning (Frontend Budibase unit)
+
+---
+
+
+## Frontend Budibase - Workflow Planning Approved
+**Timestamp**: 2026-05-20T14:15:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: Workflow plan approved. Proceeding to Code Generation stage.
+**Context**: INCEPTION → CONSTRUCTION transition (Code Generation)
+
+---
+
+
+## Frontend Budibase - Code Generation Plan Created
+**Timestamp**: 2026-05-20T14:16:00Z
+**AI Response**: Created code generation plan with 12 steps covering: datasource setup, 2 screens (Lead List + Lead Detail with workflow actions), navigation, JSON export, build guide, evaluation template, README update, and summary documentation.
+**Context**: CONSTRUCTION - Code Generation Part 1 (Planning)
+
+---
+
+## Frontend Budibase - Code Generation Plan Approval Prompt
+**Timestamp**: 2026-05-20T14:16:01Z
+**AI Prompt**: Presenting code generation plan summary to user for approval. Plan at: aidlc-docs/construction/plans/frontend-budibase-code-generation-plan.md
+**Context**: CONSTRUCTION - Code Generation Part 1 (awaiting approval)
+
+---
+
+
+## Frontend Budibase - Code Generation Plan Approved
+**Timestamp**: 2026-05-20T14:20:00Z
+**User Input**: "Approve & Start Generation"
+**AI Response**: Plan approved. Starting Code Generation Part 2 (Generation).
+**Context**: CONSTRUCTION - Code Generation Part 2 (starting execution)
+
+---
+
+
+## Frontend Budibase - Code Generation Part 2 Complete
+**Timestamp**: 2026-05-20T14:25:00Z
+**AI Response**: Completed all 12 steps of code generation plan. Generated:
+- frontend-budibase/docs/datasource-setup.md (REST API connection + 7 queries)
+- frontend-budibase/docs/budibase-build-guide.md (comprehensive step-by-step, 7 sections)
+- frontend-budibase/budibase-export.json (reference app structure)
+- frontend-budibase/docs/evaluation-notes.md (comparison template with matrix)
+- frontend-budibase/README.md (updated for Budibase Cloud)
+- aidlc-docs/construction/frontend-budibase/code/code-generation-summary.md
+**Context**: CONSTRUCTION - Code Generation Part 2 (Generation complete)
+
+---
+
+
+## Frontend Budibase - Code Generation Approved
+**Timestamp**: 2026-05-20T14:30:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: Code generation approved. Proceeding to Build and Test stage.
+**Context**: CONSTRUCTION - Code Generation → Build and Test transition
+
+---
+
+
+## Frontend Budibase - Build and Test Stage Complete
+**Timestamp**: 2026-05-20T14:35:00Z
+**Build Status**: Ready for manual build (lowcode platform)
+**Test Status**: 65 manual test cases created (pending user execution)
+**Files Generated**:
+- aidlc-docs/construction/build-and-test/frontend-budibase-build-instructions.md
+- aidlc-docs/construction/build-and-test/frontend-budibase-test-instructions.md
+- aidlc-docs/construction/build-and-test/frontend-budibase-build-and-test-summary.md
+**Context**: CONSTRUCTION - Build and Test (Frontend Budibase unit complete)
+
+---
+
+
+## Frontend Budibase - Build and Test Approved & Unit Complete
+**Timestamp**: 2026-05-20T14:40:00Z
+**User Input**: "Approve & Complete"
+**AI Response**: Frontend Budibase unit fully completed. All stages (Requirements → Workflow Planning → Code Generation → Build and Test) done.
+**Context**: CONSTRUCTION - Frontend Budibase unit COMPLETE. AI-DLC workflow for this unit finished.
+
+---
+
+## FRONTEND BUDIBASE UNIT - WORKFLOW COMPLETE
+**Timestamp**: 2026-05-20T14:40:00Z
+**Status**: All AI-DLC stages for Frontend Budibase completed successfully.
+**Deliverables**:
+- Requirements document (approved)
+- Execution plan (approved)
+- Code generation (12 steps, all complete)
+- Build & test instructions (65 test cases)
+- Platform evaluation template
+
+---
+

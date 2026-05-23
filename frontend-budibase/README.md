@@ -2,66 +2,80 @@
 
 ## Tổng quan
 
-Budibase app cho CRM Lead Management, cùng chức năng với Appsmith để so sánh.
+Budibase Cloud app cho CRM Lead Management, triển khai cùng chức năng với Appsmith (2 screens) để so sánh hai nền tảng lowcode.
 
-## Setup
+## Architecture
 
-### 1. Khởi động Budibase
-```bash
-# Thêm Budibase vào docker-compose hoặc chạy riêng
-docker run -d -p 8081:80 budibase/budibase:latest
 ```
-Truy cập: http://localhost:8081
+Budibase Cloud (budibase.app)
+        |
+        | HTTPS (ngrok tunnel - dùng chung với Appsmith)
+        v
+    ngrok → localhost:8090
+        |
+        v
+Spring Boot Domain Service (port 8090)
+        |
+        v
+Camunda Zeebe (Docker, port 26500)
+```
 
-### 2. Tạo Datasource
-- Vào Data → Add Source → REST API
-- Name: `CRM Domain Service`
-- URL: `http://host.docker.internal:8090` (hoặc IP của host)
+## Screens
 
-### 3. Tạo Screens
+| # | Screen | Route | Chức năng |
+|---|---|---|---|
+| 1 | Lead List | /leads | Danh sách leads, click → detail |
+| 2 | Lead Detail | /lead/:leadId | Chi tiết + status update + workflow actions |
 
-#### Screen 1: Lead List
-- **Component**: Table
-- **Data**: REST query GET /api/leads
-- **Columns**: Status, ID, Customer Name, Product
-- **Row click**: Navigate to detail screen
+## Quick Start
 
-#### Screen 2: Lead Detail
-- **Data**: REST query GET /api/leads/{{id}}
-- **Components**:
-  - Headline + Paragraph cho thông tin
-  - Progress Steps cho trạng thái
-  - Repeater cho history
-  - Form + Dropdown cho cập nhật
+### Prerequisites
+- Tài khoản Budibase Cloud (budibase.app)
+- Domain Service đang chạy (localhost:8090)
+- ngrok tunnel đang chạy
 
-#### Screen 3: Lead Allocation
-- **Data**: GET /api/leads/allocatable?ownerId=USR-MGR-01
-- **Components**:
-  - Checkbox Group cho Leads
-  - Button → Modal
-  - Modal: Checkbox Group cho Users
-  - Confirm button → POST /api/leads/allocate
+### Cách 1: Build từ đầu (Recommended)
+1. Đọc `docs/datasource-setup.md` - Setup REST API connection
+2. Đọc `docs/budibase-build-guide.md` - Build từng screen step-by-step
 
-#### Screen 4: Dynamic Form
-- **Data**: GET /api/forms/{{taskType}}
-- **Logic**: Custom JS để parse schema và render
-- **Components**: Dynamic Form Builder hoặc custom component
+### Cách 2: Import JSON
+1. Đăng nhập Budibase Cloud
+2. Import `budibase-export.json`
+3. Reconfigure datasource URL (ngrok URL mới)
+4. Test
 
-## Dynamic Form Rendering
+> **Lưu ý**: File `budibase-export.json` là reference structure. Budibase export format có thể khác tùy version. Khuyến nghị build từ guide.
 
-Budibase approach:
-1. Fetch form schema từ API
-2. Dùng Budibase Bindings + Conditional logic
-3. Render fields dựa trên schema type
-4. Handle visibility conditions qua JS bindings
-5. Submit → complete workflow task
+## API Endpoints (Domain Service)
 
-## So sánh Notes
+| Method | Endpoint | Screen |
+|---|---|---|
+| GET | /api/leads | Lead List |
+| GET | /api/leads/{id} | Lead Detail |
+| PUT | /api/leads/{id}/status | Lead Detail |
+| POST | /api/workflow/lead/{leadId}/contact | Lead Detail |
+| POST | /api/workflow/lead/{leadId}/process | Lead Detail |
+| POST | /api/workflow/lead/{leadId}/collect-documents | Lead Detail |
+| POST | /api/workflow/lead/{leadId}/reject | Lead Detail |
 
-Ghi nhận các điểm sau khi build:
-- Thời gian setup datasource
-- Khả năng render dynamic form
-- Conditional field handling
-- Component library richness
-- Self-hosted deployment ease
-- Community & documentation quality
+## So sánh với Appsmith
+
+| Tiêu chí | Appsmith | Budibase |
+|---|---|---|
+| Hosting | Appsmith Cloud | Budibase Cloud |
+| Scope | 4 pages | 2 screens (Lead List + Detail) |
+| Tunnel | ngrok | ngrok (dùng chung) |
+| Datasource | REST API datasource | REST API connection |
+| Bindings | JS `{{variable}}` | Handlebars `{{ variable }}` |
+| Export | JSON (app-level) | JSON (workspace-level) |
+
+## Docs
+
+- `docs/datasource-setup.md` - Hướng dẫn setup datasource
+- `docs/budibase-build-guide.md` - Step-by-step build guide
+- `docs/evaluation-notes.md` - Template đánh giá so sánh
+
+## Evaluation
+
+Sau khi build xong, điền đánh giá vào `docs/evaluation-notes.md` để so sánh với Appsmith.
+
